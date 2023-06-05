@@ -3,14 +3,12 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 import { Tag } from 'primereact/tag';
 
 import "primereact/resources/primereact.min.css";
-import "primereact/resources/themes/md-dark-indigo/theme.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 
@@ -65,18 +63,6 @@ export default function Pessoas() {
     });
     console.log(selectPerson);
   }
-
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
-      </div>
-    );
-  };
-
-  const rightToolbarTemplate = () => {
-    return <Button label="Export" icon="pi pi-upload" className="p-button-help" />;
-  };
 
   const openNew = () => {
     setSelectPerson();
@@ -162,7 +148,10 @@ export default function Pessoas() {
 
   const header = (
     <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <h4 className="m-0">Pessoas</h4>
+      <div className="flex flex-wrap gap-2">
+        <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
+      </div>
+      <h1 className="m-0">Pessoas</h1>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Pesquisar..." />
@@ -195,7 +184,6 @@ export default function Pessoas() {
     <div>
       <Toast ref={toast} />
       <div className="card">
-        <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
         <DataTable
           value={data}

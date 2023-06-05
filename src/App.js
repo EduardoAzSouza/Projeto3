@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 // pages
 import Pessoas from "./pages/Pessoas/Pessoas";
 import Empresas from "./pages/Empresas/Empresas";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
 
@@ -17,6 +18,10 @@ function App() {
         <Navbar />
         <div className="container">
           <Routes>
+            <Route
+            path='/'
+            element={ <Dashboard /> }  
+            />  
             <Route
             path="/pessoas"
             element={ <Pessoas /> }

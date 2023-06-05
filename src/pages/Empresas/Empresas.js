@@ -3,9 +3,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import { Toolbar } from 'primereact/toolbar';
+import { Menu } from 'primereact/menu';
 import { Dialog } from 'primereact/dialog';
-import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
@@ -25,8 +24,9 @@ export default function Empresass() {
   const [dialog, setDialog] = useState(false);
   const [updateDialog, setUpdateDialog] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
+  const [statusDialog, setStatusDialog] = useState(false);
   const toast = useRef(null);
-
+  const options = useRef(null);
   const [expandedRows, setExpandedRows] = useState(null);
 
   const [selectCompany, setSelectCompany] = useState({
@@ -49,12 +49,12 @@ export default function Empresass() {
   })
 
   const [endereco, setEndereco] = useState({
-      cep: '',
-      estado: '',
-      cidade: '',
-      rua: '',
-      numero: '',
-      bairro: '',
+    cep: '',
+    estado: '',
+    cidade: '',
+    rua: '',
+    numero: '',
+    bairro: ''
   });
 
   const Getall = async () => {
@@ -91,6 +91,10 @@ export default function Empresass() {
     setDeleteDialog(false);
   };
 
+  const hideStatusDialog = () => {
+    setStatusDialog(false);
+  };
+
   const handleChange = e => {
     const { name, value } = e.target;
     setSelectCompany({
@@ -99,16 +103,15 @@ export default function Empresass() {
     console.log(selectCompany);
   }
 
-  const leftToolbarTemplate = () => {
-    return (
-      <div className="flex flex-wrap gap-2">
-        <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
-      </div>
-    );
-  };
-
-  const rightToolbarTemplate = () => {
-    return <Button label="Export" icon="pi pi-upload" className="p-button-help" />;
+  const handleNumeroChange = (e) => {
+    const numero = e.target.value;
+    setSelectCompany(prevState => ({
+      ...prevState,
+      endereco: {
+        ...prevState.endereco,
+        numero: numero
+      }
+    }));
   };
 
   const openNew = () => {
@@ -125,6 +128,11 @@ export default function Empresass() {
   const confirmDelete = (selectCompany) => {
     setSelectCompany(selectCompany);
     setDeleteDialog(true);
+  };
+
+  const confirmStatus = (selectCompany) => {
+    setSelectCompany(selectCompany);
+    setStatusDialog(true);
   };
 
   const register = async () => {
@@ -155,7 +163,7 @@ export default function Empresass() {
   };
 
   const exclude = async () => {
-    await axios.delete("https://localhost:7149/Empresa/Deletar" + selectCompany.id)
+    await axios.delete("https://localhost:7149/Empresa/Deletar/" + selectCompany.id)
       .then(response => {
         setData(data.filter(empresa => empresa.id !== response.data));
         setUpdateData(true);
@@ -165,6 +173,16 @@ export default function Empresass() {
       })
   };
 
+  const upStatus = async () => {
+    await axios.put("https://localhost:7149/Empresa/alterar_status/" + selectCompany.id)
+      .then(response => {
+        setData(data.filter(empresa => empresa.id !== response.data));
+        setUpdateData(true);
+        setStatusDialog(false);
+        setSelectCompany();
+        toast.current.show({ severity: 'success', summary: 'Ataulizado', detail: 'status Atualizado', life: 3000 });
+      })
+  };
   const statusBodyTemplate = (rowData) => {
     return <Tag value={rowData.status} severity={getSeverity(rowData)}></Tag>;
   };
@@ -172,11 +190,31 @@ export default function Empresass() {
   const actionBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-        <Button icon="pi pi-pencil" rounded outlined className="mr-2" onClick={() => confirmUpdate(rowData)} />
-        <Button icon="pi pi-trash" rounded outlined severity="danger" onClick={() => confirmDelete(rowData)} />
+        <Button icon="pi pi-pencil" rounded outlined className="mr-1" onClick={() => confirmUpdate(rowData)} />
+        <Button icon="pi pi-trash" rounded outlined className="mr-1" severity="danger" onClick={() => confirmDelete(rowData)} />
+        <Button icon="pi pi-verified" rounded outlined className="mr-1" severity="warn" onClick={() => confirmStatus(rowData)} />
+
+
+        {/* <Menu model={items} popup ref={options} id="options" />
+        <Button  icon="pi pi-ellipsis-h" rounded outlined severity="info" model={items} onClick={(event) => options.current.toggle(event)} aria-controls="options" aria-haspopup/> */}
       </React.Fragment>
     );
   };
+
+  // const items = [
+  //   {
+  //     label: 'Ataulizar Status',
+  //     icon: 'pi pi-verified',
+  //     confirmStatus(rowData);
+  //   },
+  //   {
+  //     label: 'Ver todas Pessoas',
+  //     icon: 'pi pi-users',
+  //     command: () => {
+
+  //     }
+  //   }
+  // ];
 
   const getSeverity = (empresas) => {
     switch (empresas.status) {
@@ -202,22 +240,40 @@ export default function Empresass() {
     return (
       <div className="p-3">
         <h5>Endereço {data.nomeFantasia}</h5>
-        <div class="grid">
-          <div class="col-1">{data.endereco.cep}</div>
-          <div class="col">{data.endereco.estado}</div>
-          <div class="col">{data.endereco.cidade}</div>
-          <div class="col">{data.endereco.rua}</div>
-          <div class="col">{data.endereco.numero}</div>
-          <div class="col">{data.endereco.bairro}</div>
-
+        <div class="card flex flex-column md:flex-row gap-3">
+          <div class="field">{data.endereco.cep}</div>
+          <div class="field">{data.endereco.rua}, {data.endereco.numero}, {data.endereco.bairro}</div>
+          <div class="field">{data.endereco.cidade} - {data.endereco.estado}</div>
         </div>
+        <div class="card flex flex-column md:flex-row gap-8">
+          <div class="p-fluid">
+            <h5>Natureza Juridica</h5>
+            <div class="field">{data.naturezaJuridica}</div>
+          </div>
+          <div class="p-fluid">
+            <h5>CNAE</h5>
+            <div class="field">{data.cnae}</div>
+          </div>
+          <div class="p-fluid">
+            <h5>Telefone</h5>
+            <div class="field">{data.telefone}</div>
+          </div>
+          <div class="p-fluid">
+            <h5>Nome Empresarial</h5>
+            <div class="field">{data.nomeEmpresarial}</div>
+          </div>
+        </div>
+
       </div>
     );
   };
 
   const header = (
     <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-      <h4 className="m-0">Empresas</h4>
+      <div className="flex flex-wrap gap-2">
+        <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
+      </div>
+      <h1 className="m-0">Empresas</h1>
       <span className="p-input-icon-left">
         <i className="pi pi-search" />
         <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Pesquisar..." />
@@ -246,28 +302,48 @@ export default function Empresass() {
     </React.Fragment>
   );
 
-  const checkCEP = (e) => {
+  const statusDialogFooter = (
+    <React.Fragment>
+      <Button label="Não" icon="pi pi-times" outlined onClick={hideStatusDialog} />
+      <Button label="Sim" icon="pi pi-check" severity="danger" onClick={upStatus} />
+    </React.Fragment>
+  );
+
+  const CEP = async (e) => {
     const cep = e.target.value;
-    fetch(`https://viacep.com.br/ws/${cep}/json/`).then(res => res.json()).then(end => {
-      setEndereco(end);
-    });
-  }
-
-  const CEP = async(e) => {
-    const cep = e.target.value;
-    await axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-    .then(response => {
-      setEndereco(response.data);
-    });
-  }
-
-
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (response.ok) {
+        const data = await response.json();
+        setSelectCompany({
+          ...selectCompany,
+          endereco: {
+            cep: cep,
+            estado: data.uf,
+            cidade: data.localidade,
+            bairro: data.bairro,
+            rua: data.logradouro
+          }
+        });
+        setEndereco({
+          ...endereco,
+          estado: data.uf,
+          cidade: data.localidade,
+          bairro: data.bairro,
+          rua: data.logradouro
+        });
+      } else {
+        throw new Error('Erro na busca do endereço');
+      }
+    } catch (error) {
+      console.log('Erro na busca do endereço:', error);
+    }
+  };
 
   return (
     <div>
       <Toast ref={toast} />
       <div className="card">
-        <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
         <DataTable
           value={data}
@@ -285,22 +361,18 @@ export default function Empresass() {
           rowExpansionTemplate={rowExpansionTemplate}
           header={header}>
 
-          <Column field="id" header="ID" sortable style={{ minWidth: '4rem', textAlign: 'center' }}></Column>
-          <Column field="cnpj" header="CNPJ" sortable style={{ minWidth: '10rem' }}></Column>
-          <Column field="dataAbertura" sortable header="Data de Inicio"></Column>
-          <Column field="nomeEmpresarial" sortable header="Nome"></Column>
+          <Column expander={allowExpansion} style={{ width: "4rem" }} />
+          <Column field="id" header="ID" sortable style={{ minWidth: '4rem' }}></Column>
           <Column field="nomeFantasia" sortable header="Nome Fantasia"></Column>
-          <Column field="cnae" sortable header="CNAE" style={{ minWidth: '7rem' }}></Column>
-          <Column field="naturezaJuridica" sortable header="Natureza"></Column>
+          <Column field="cnpj" header="CNPJ" sortable style={{ minWidth: '10rem' }}></Column>
           <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
-          <Column header="Endereço" expander={allowExpansion} style={{ width: "5rem" }} />
-          <Column field="telefone" sortable header="Telefone"></Column>
+          <Column field="dataAbertura" sortable header="Data de Inicio"></Column>
           <Column field="capital" sortable header="Capital"></Column>
           <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '10rem' }}></Column>
         </DataTable>
       </div>
+
       <Dialog modal className="p-fluid"
-        value={endereco}
         header="Cadastrar nova Empresa"
         footer={dialogFooter}
         visible={dialog}
@@ -347,7 +419,7 @@ export default function Empresass() {
           <div className="p-fluid flex-1">
             <div className="field">
               <label htmlFor="name" className="font-bold">Data de Abertura</label>
-              <InputText name="dataAbertura" onChange={handleChange} />
+              <InputMask mask="99/99/9999" name="dataAbertura" onChange={handleChange} />
             </div>
           </div>
         </div>
@@ -356,7 +428,7 @@ export default function Empresass() {
           <div className="p-fluid flex-1">
             <div className="field">
               <label htmlFor="name" className="font-bold">Telefone</label>
-              <InputMask mask="(99)99999-9999" unmask name="telefone" onChange={handleChange}  />
+              <InputMask mask="(99)99999-9999" unmask name="telefone" onChange={handleChange} />
             </div>
           </div>
           <div className="p-fluid flex-1">
@@ -377,26 +449,26 @@ export default function Empresass() {
             </div>
             <div className="field">
               <label htmlFor="name" className="font-bold">Estado</label>
-              <InputText name="endereco.estado" value={endereco && endereco.uf} onChange={handleChange} required />
+              <InputText name="endereco.estado" value={endereco && endereco.estado} required readOnly />
             </div>
             <div className="field">
               <label htmlFor="name" className="font-bold">Cidade</label>
-              <InputText name="endereco.cidade" value={endereco && endereco.localidade} onChange={handleChange} required readOnly />
+              <InputText name="endereco.cidade" value={endereco && endereco.cidade} required readOnly />
             </div>
           </div>
 
           <div className="card flex flex-column md:flex-row gap-3">
             <div className=" field">
               <label htmlFor="name" className="font-bold">Rua</label>
-              <InputText name="endereco.rua" value={endereco && endereco.logradouro} onChange={handleChange} required readOnly />
+              <InputText name="endereco.rua" value={endereco && endereco.rua} required readOnly />
             </div>
             <div className="field">
               <label htmlFor="name" className="font-bold">Bairro</label>
-              <InputText name="endereco.bairro" value={endereco && endereco.bairro} onChange={handleChange} required readOnly />
+              <InputText name="endereco.bairro" value={endereco && endereco.bairro} required readOnly />
             </div>
             <div className="field">
               <label htmlFor="name" className="font-bold">Numero</label>
-              <InputText name="endereco.numero" onChange={handleChange} required />
+              <InputText name="endereco.numero" onChange={handleNumeroChange} required />
             </div>
           </div>
         </div>
@@ -406,42 +478,113 @@ export default function Empresass() {
       <Dialog modal className="p-fluid"
         header="Editar Empresa"
         footer={updateDialogFooter}
-        style={{ width: '32rem' }}
+        style={{ width: '50rem' }}
         breakpoints={{ '960px': '75vw', '641px': '90vw' }}
         visible={updateDialog}
         onHide={hideUpdateDialog}>
 
-        <div className="field">
-          <label htmlFor="name" className="font-bold">Nome</label>
-          <div className="p-inputgroup">
-            <InputText name="nome"
-              value={selectCompany && selectCompany.nome} onChange={handleChange} required />
-            <span className="p-inputgroup-addon">
-              <i className="pi pi-language"></i>
-            </span>
+        <div className="card flex flex-column md:flex-row gap-3">
+
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Nome Fantasia</label>
+              <InputText name="nomeFantasia" value={selectCompany && selectCompany.nomeFantasia}
+                onChange={handleChange} required autoFocus />
+            </div>
+          </div>
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Nome Fantasia</label>
+              <InputText name="nomeEmpresarial" value={selectCompany && selectCompany.nomeEmpresarial}
+                onChange={handleChange} required />
+            </div>
           </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="name" className="font-bold">CPF</label>
-          <div className="p-inputgroup">
-            <InputText name="documento"
-              value={selectCompany && selectCompany.documento} readOnly />
-            <span className="p-inputgroup-addon">
-              <i className="pi pi-id-card"></i>
-            </span>
+        <div className="card flex flex-column md:flex-row gap-3">
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">CNPJ</label>
+              <InputMask mask="99.999.999/9999-99" unmask name="cnpj" value={selectCompany && selectCompany.cnpj}
+                onChange={handleChange} readOnly />
+            </div>
+          </div>
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">CNAE</label>
+              <InputMask mask="9999-9/99" unmask name="cnae" value={selectCompany && selectCompany.cnae}
+                onChange={handleChange} required />
+            </div>
           </div>
         </div>
 
+        <div className="card flex flex-column md:flex-row gap-3">
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Natureza Juridica</label>
+              <InputText name="naturezaJuridica" value={selectCompany && selectCompany.naturezaJuridica}
+                onChange={handleChange} required />
+            </div>
+          </div>
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Data de Abertura</label>
+              <InputMask mask="99/99/9999" name="dataAbertura" value={selectCompany && selectCompany.dataAbertura}
+                onChange={handleChange} readOnly />
+            </div>
+          </div>
+        </div>
 
-        <div className="field">
-          <label htmlFor="name" className="font-bold">Usuario</label>
-          <div className="p-inputgroup">
-            <InputText name="usuario" value={selectCompany && selectCompany.usuario}
-              onChange={handleChange} required />
-            <span className="p-inputgroup-addon">
-              <i className="pi pi-user"></i>
-            </span>
+        <div className="card flex flex-column md:flex-row gap-3">
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Telefone</label>
+              <InputMask mask="(99)99999-9999" unmask name="telefone" value={selectCompany && selectCompany.telefone}
+                onChange={handleChange} />
+            </div>
+          </div>
+          <div className="p-fluid flex-1">
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Capital</label>
+              <InputNumber name="capital" value={selectCompany && selectCompany.capital}
+                onValueChange={handleChange} mode="currency" currency="BRL" locale="pt-BR" />
+            </div>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>Endereço</h3>
+          <hr></hr>
+          <div className="card flex flex-column md:flex-row gap-3">
+            <div className=" field">
+              <label htmlFor="name" className="font-bold">cep</label>
+              <InputText name="endereco.cep" value={selectCompany.endereco.cep}
+                onChange={handleChange} onBlur={CEP} required />
+            </div>
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Estado</label>
+              <InputText name="endereco.estado" value={selectCompany.endereco.estado} required readOnly />
+            </div>
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Cidade</label>
+              <InputText name="endereco.cidade" value={selectCompany.endereco.cidade} required readOnly />
+            </div>
+          </div>
+
+          <div className="card flex flex-column md:flex-row gap-3">
+            <div className=" field">
+              <label htmlFor="name" className="font-bold">Rua</label>
+              <InputText name="endereco.rua" value={selectCompany.endereco.rua} required readOnly />
+            </div>
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Bairro</label>
+              <InputText name="endereco.bairro" value={selectCompany.endereco.bairro} required readOnly />
+            </div>
+            <div className="field">
+              <label htmlFor="name" className="font-bold">Numero</label>
+              <InputText name="endereco.numero" value={selectCompany.endereco.numero}
+                onChange={handleNumeroChange} required />
+            </div>
           </div>
         </div>
       </Dialog>
@@ -456,6 +599,21 @@ export default function Empresass() {
           {selectCompany && (
             <span>
               Você tem certeza que deseja deletar <b>{selectCompany.nomeFantasia}</b>?
+            </span>
+          )}
+        </div>
+      </Dialog>
+
+      <Dialog visible={statusDialog} style={{ width: '32rem' }}
+        breakpoints={{ '960px': '75vw', '641px': '90vw' }}
+        header="Confirme"
+        modal footer={statusDialogFooter}
+        onHide={hideStatusDialog}>
+        <div className="confirmation-content">
+          <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+          {selectCompany && (
+            <span>
+              Você tem certeza que deseja Aleterar o status de <b>{selectCompany.nomeFantasia}</b>?
             </span>
           )}
         </div>

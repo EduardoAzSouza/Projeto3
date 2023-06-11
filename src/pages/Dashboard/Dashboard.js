@@ -1,8 +1,11 @@
+import { CompanyContextProvider } from "../../Contexts/CompanyContext";
+import Table from "../Empresas/Components/Table/index"
+
 const Dashboard = () => {
     return (
-      <header>
-        <h1>Dashboard</h1>
-      </header>
+      <section>
+        teste
+      </section>
     )
   }
   

@@ -8,10 +8,6 @@ import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 import { Tag } from 'primereact/tag';
 
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import "primeflex/primeflex.css";
-
 import axios from "axios";
 
 export default function Pessoas() {

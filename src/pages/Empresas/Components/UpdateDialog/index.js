@@ -24,19 +24,7 @@ const UpdateDialog = (props) => {
         setSelectCompany({
             ...selectCompany, [name]: value
         });
-        console.log(selectCompany);
     }
-
-    const handleCepChange = (e) => {
-        const cep = e.target.value;
-        setSelectCompany(prevState => ({
-            ...prevState,
-            endereco: {
-                ...prevState.endereco,
-                cep: cep
-            }
-        }));
-    };
 
     const handleNumberChange = (e) => {
         const numero = e.target.value;
@@ -61,6 +49,10 @@ const UpdateDialog = (props) => {
 
     const hideUpdateDialog = () => {
         setUpdateDialog(false);
+        toast.current.show({
+            severity: 'warn', summary: 'Aviso',
+            detail: 'Atualizado não salva', life: 3000
+        });
     };
 
     const updateDialogFooter = (
@@ -70,21 +62,35 @@ const UpdateDialog = (props) => {
         </React.Fragment>
     );
 
+
     const CEP = async (e) => {
-        const cep = e.target.value;
+        const cep = e.target.value.replace(/\D/g, '');
+
         try {
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             if (response.ok) {
                 const data = await response.json();
-                setSelectCompany({
-                    ...selectCompany,
-                    endereco: {
-                        estado: data.uf,
-                        cidade: data.localidade,
-                        bairro: data.bairro,
-                        rua: data.logradouro
-                    }
-                });
+                const keys = Object.keys(data);
+                if (keys.length > 1) {
+                    setSelectCompany(prevState => ({
+                        ...prevState,
+                        endereco: {
+                            ...prevState.endereco,
+                            cep: cep,
+                            estado: data.uf,
+                            cidade: data.localidade,
+                            bairro: data.bairro,
+                            rua: data.logradouro
+                        }
+                    }));
+                }else{
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Erro",
+                        detail: ("Cep não encontradoo, O Cep não será atualizado"),
+                        life: 3000,
+                    });
+                }
             } else {
                 throw new Error('Erro na busca do endereço');
             }
@@ -133,7 +139,7 @@ const UpdateDialog = (props) => {
                         <div className="field">
                             <label htmlFor="name" className="font-bold">CNAE</label>
                             <InputMask mask="9999-9/99" unmask name="cnae" value={selectCompany && selectCompany.cnae}
-                                onChange={handleChange} required />
+                            autoClear={false} onChange={handleChange} required />
                         </div>
                     </div>
                 </div>
@@ -159,7 +165,7 @@ const UpdateDialog = (props) => {
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Telefone</label>
                             <InputMask mask="(99)99999-9999" unmask name="telefone" value={selectCompany && selectCompany.telefone}
-                                onChange={handleChange} />
+                            autoClear={false} onChange={handleChange} />
                         </div>
                     </div>
                     <div className="p-fluid flex-1">
@@ -177,8 +183,8 @@ const UpdateDialog = (props) => {
                     <div className="card flex flex-column md:flex-row gap-3">
                         <div className=" field">
                             <label htmlFor="name" className="font-bold">cep</label>
-                            <InputText name="endereco.cep" value={selectCompany?.endereco && selectCompany?.endereco.cep}
-                                onBlur={CEP} onValueChange={handleCepChange} required />
+                            <InputMask mask="99.999-999" name="endereco.cep" value={selectCompany?.endereco && selectCompany?.endereco.cep}
+                            onBlur={CEP} autoClear={false} required />
                         </div>
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Estado</label>

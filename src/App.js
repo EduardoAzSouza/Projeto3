@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 // components
@@ -6,8 +6,8 @@ import Footer from "./components/Footer";
 import Navbar from './components/Navbar';
 
 // pages
-import Pessoas from "./pages/Pessoas/Pessoas";
-import Empresas from "./pages/Empresas/Empresas";
+import Pessoas from "./pages/Pessoas/";
+import Empresas from "./pages/Empresas";
 import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {

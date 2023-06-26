@@ -1,10 +1,12 @@
-import { CompanyContextProvider } from "../../Contexts/CompanyContext";
-import Table from "../Empresas/Components/Table/index"
+import { PersonContextProvider } from "../../Contexts/PersonContext";
+import Table from "../Pessoas/Components/Table"
 
 const Dashboard = () => {
     return (
       <section>
-        teste
+        <PersonContextProvider>
+          <Table />
+        </PersonContextProvider>
       </section>
     )
   }

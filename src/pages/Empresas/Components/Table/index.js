@@ -39,19 +39,14 @@ export default function Table() {
 
     const [globalFilter, setGlobalFilter] = useState(null);
     const [expandedRows, setExpandedRows] = useState(null);
-
     const toast = useRef(null);
-
-    // useEffect(() => {
-    //     GetAllCompanies();
-    // }, [data]);
 
     useEffect(() => {
         if (updateData) {
             GetAllCompanies();
             setUpdateData(false);
         }
-    }, [updateData]);
+    }, [GetAllCompanies, setUpdateData, updateData]);
 
     const openNew = () => {
         setSelectCompany();
@@ -95,10 +90,10 @@ export default function Table() {
 
         return (
             <React.Fragment>
-                <Button icon="pi pi-pencil" rounded outlined className="mr-1" onClick={() => confirmUpdate(rowData)}/>
+                <Button icon="pi pi-pencil" rounded outlined className="mr-1" onClick={() => confirmUpdate(rowData)} />
                 <Button icon="pi pi-trash" rounded outlined className="mr-1" severity="danger" onClick={() => confirmDelete(rowData)} />
-                <Button icon="pi pi-verified" rounded outlined className="mr-1" severity="warn" onClick={() => confirmStatus(rowData)} />
-                <Button icon="pi pi-users" rounded outlined className="mr-1" severity="warn" onClick={() => confirmUsers(rowData)} />
+                <Button icon="pi pi-verified" rounded outlined className="mr-1" severity="warning" onClick={() => confirmStatus(rowData)} />
+                <Button icon="pi pi-users" rounded outlined className="mr-1" severity="success" onClick={() => confirmUsers(rowData)} />
 
                 {/* <Menu model={items} popup ref={options} id="options" />
                 <Button icon="pi pi-ellipsis-h" rounded outlined severity="info" model={items}
@@ -127,6 +122,18 @@ export default function Table() {
         return <Tag value={rowData.status} severity={getSeverity(rowData)}></Tag>;
     };
 
+    const expandAll = () => {
+        let _expandedRows = {};
+
+        data.forEach((p) => (_expandedRows[`${p.id}`] = true));
+
+        setExpandedRows(_expandedRows);
+    };
+
+    const collapseAll = () => {
+        setExpandedRows(null);
+    };
+
     const allowExpansion = (rowData) => {
         return rowData.endereco != null;
     };
@@ -136,7 +143,7 @@ export default function Table() {
             <div className="p-3">
                 <h5>Endereço {data.nomeFantasia}</h5>
                 <div class="card flex flex-column md:flex-row gap-3">
-                    <div class="field">{data.endereco.cep}</div>
+                    <div class="field">{data.endereco.cep?.replace(/\D/g, '').replace(/(\d{2})(\d{3})(\d{3})/, "$1.$2-$3")}</div>
                     <div class="field">{data.endereco.rua}, {data.endereco.numero}, {data.endereco.bairro}</div>
                     <div class="field">{data.endereco.cidade} - {data.endereco.estado}</div>
                 </div>
@@ -147,11 +154,11 @@ export default function Table() {
                     </div>
                     <div class="p-fluid">
                         <h5>CNAE</h5>
-                        <div class="field">{data.cnae}</div>
+                        <div class="field">{data.cnae?.replace(/\D/g, '').replace(/(\d{4})(\d{1})(\d{2})/, "$1-$2/$3")}</div>
                     </div>
                     <div class="p-fluid">
                         <h5>Telefone</h5>
-                        <div class="field">{data.telefone}</div>
+                        <div class="field">{data.telefone?.replace(/\D/g, '').replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3")}</div>
                     </div>
                     <div class="p-fluid">
                         <h5>Nome Empresarial</h5>
@@ -167,12 +174,16 @@ export default function Table() {
         <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
             <div className="flex flex-wrap gap-2">
                 <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
+                <Button icon="pi pi-plus" onClick={expandAll} text />
+                <Button icon="pi pi-minus" onClick={collapseAll} text />
             </div>
             <h1 className="m-0">Empresas</h1>
-            <span className="p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Pesquisar..." />
-            </span>
+            <div>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Pesquisar..." />
+                </span>
+            </div>
         </div>
     );
 
@@ -182,6 +193,15 @@ export default function Table() {
 
     const onRowCollapse = (event) => {
         toast.current.show({ severity: 'success', summary: 'Endereço Colapsado', detail: event.data.nomeFantasia, life: 3000 });
+    };
+
+    const cnpjformat = (rowData) => {
+        return rowData.cnpj.replace(/\D/g, '')
+            .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5");
+    };
+
+    const capitalformat = (rowData) => {
+        return rowData.capital.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
     return (
@@ -208,10 +228,10 @@ export default function Table() {
                     <Column expander={allowExpansion} style={{ width: "4rem" }} />
                     <Column field="id" header="ID" sortable style={{ minWidth: '4rem' }}></Column>
                     <Column field="nomeFantasia" sortable header="Nome Fantasia"></Column>
-                    <Column field="cnpj" header="CNPJ" sortable style={{ minWidth: '10rem' }}></Column>
+                    <Column field="cnpj" header="CNPJ" sortable body={cnpjformat} style={{ minWidth: '10rem' }}></Column>
                     <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
                     <Column field="dataAbertura" sortable header="Data de Inicio"></Column>
-                    <Column field="capital" sortable header="Capital"></Column>
+                    <Column field="capital" sortable body={capitalformat} header="Capital"></Column>
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '10rem' }}></Column>
                 </DataTable>
 

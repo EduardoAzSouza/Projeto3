@@ -1,10 +1,12 @@
-import React, { useRef, useContext } from 'react';
+import React, { useRef, useContext, useState } from 'react';
 import { PersonContext } from '../../../../Contexts/PersonContext';
 import { useAxios } from "../../../../hooks/useAxios";
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
+import { Message } from 'primereact/message';
 import { Button } from 'primereact/button';
+import { classNames } from "primereact/utils";
 import { Toast } from 'primereact/toast';
 
 const UpdateDialog = (props) => {
@@ -17,6 +19,7 @@ const UpdateDialog = (props) => {
         setSelectPerson
     } = useContext(PersonContext);
     const toast = useRef(null);
+    const [submitted, setSubmitted] = useState(false);
 
     const handleChange = e => {
         const { name, value } = e.target;
@@ -27,17 +30,42 @@ const UpdateDialog = (props) => {
     }
 
     const update = async () => {
-        UpdatePerson(selectPerson)
-        setUpdateData(true);
-        setUpdateDialog(false);
-        toast.current.show({
-            severity: 'success', summary: 'Successful',
-            detail: 'Atualizado com Sucesso', life: 3000
-        });
+        setSubmitted(true);
+        try {
+            if (selectPerson.documento?.length === 11
+                && selectPerson.nome?.length >= 5
+                && selectPerson.usuario?.length >= 3) {
+                UpdatePerson(selectPerson)
+                setUpdateDialog(false);
+                setSubmitted(false);
+                setSelectPerson();
+                toast.current.show({
+                    severity: 'success', summary: 'Successful',
+                    detail: 'Atualizado com Sucesso', life: 3000
+                });
+                setUpdateData(true);
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Erro",
+                    detail: "Falha ao Atualizar revise os dados",
+                    life: 3000,
+                });
+            }
+        } catch (error) {
+            console.log('Erro ao apagar', error);
+        }
     };
 
     const hideUpdateDialog = () => {
+        setSubmitted(false);
         setUpdateDialog(false);
+        toast.current.show({
+            severity: "warn",
+            summary: "Cancelado",
+            detail: "Cadastro não atualizado",
+            life: 3000,
+        });
     };
 
     const updateDialogFooter = (
@@ -62,17 +90,31 @@ const UpdateDialog = (props) => {
                     <label htmlFor="name" className="font-bold">Nome</label>
                     <div className="p-inputgroup">
                         <InputText name="nome"
-                            value={selectPerson && selectPerson.nome} onChange={handleChange} required />
+                            value={selectPerson && selectPerson.nome} onChange={handleChange} maxlength={80} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectPerson.nome)
+                            })} />
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-language"></i>
                         </span>
                     </div>
+                    {submitted && !selectPerson.nome && (
+                        <Message
+                            style={{
+                                background: "none",
+                                justifyContent: "start",
+                                padding: "5px",
+                            }}
+                            severity="error"
+                            text="nome é obrigatorio"
+                        />
+                    )}
                 </div>
                 <div className="field">
                     <label htmlFor="name" className="font-bold">CPF</label>
                     <div className="p-inputgroup">
                         <InputMask mask="999.999.999-99" unmask name="documento"
-                            value={selectPerson && selectPerson.documento} readOnly />
+                            value={selectPerson && selectPerson.documento} disabled />
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-id-card"></i>
                         </span>
@@ -92,12 +134,26 @@ const UpdateDialog = (props) => {
                     <label htmlFor="name" className="font-bold">Usuario</label>
                     <div className="p-inputgroup">
                         <InputText name="usuario" value={selectPerson && selectPerson.usuario}
-                            onChange={handleChange} required />
-                        <span className="p-inputgroup-addon">
-                            <i className="pi pi-user"></i>
-                        </span>
+                            onChange={handleChange} required className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectPerson.usuario)
+                            })} />
+                            <span className="p-inputgroup-addon">
+                                <i className="pi pi-user"></i>
+                            </span>
+                        </div>
+                        {submitted && !selectPerson.usuario && (
+                            <Message
+                                style={{
+                                    background: "none",
+                                    justifyContent: "start",
+                                    padding: "5px",
+                                }}
+                                severity="error"
+                                text="usuario é obrigatorio"
+                            />
+                        )}
                     </div>
-                </div>
             </Dialog>
         </React.Fragment>
     );

@@ -16,14 +16,18 @@ const StatusDialog = () => {
     const toast = useRef(null);
 
     const updateStatus = async () => {
-        StatusUpdateP(selectPerson.id)
+        try {
+            StatusUpdateP(selectPerson.id)
         setStatusDialog(false);
         setSelectPerson();
         toast.current.show({
             severity: 'success', summary: 'Ataulizado',
             detail: 'status Atualizado', life: 3000
         });
-        setUpdateData(true);
+        await setUpdateData(true);
+        }catch (error) {
+            console.log('Erro ao atualizar status', error);
+        }
     };
 
     const hideStatusDialog = () => {

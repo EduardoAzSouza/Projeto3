@@ -33,16 +33,16 @@ export default function Pessoas() {
       });
   }
 
-  useEffect(() =>{
-    Getall();
-  },[])
+  // useEffect(() =>{
+  //   Getall();
+  // },[])
 
-  // useEffect(() => {
-  //   if (updateData) {
-  //     Getall();
-  //     setUpdateData(false);
-  //   }
-  // }, [updateData]);
+  useEffect(() => {
+    if (updateData) {
+      Getall();
+      setUpdateData(false);
+    }
+  }, [updateData]);
 
   const hideDialog = () => {
     setDialog(false);

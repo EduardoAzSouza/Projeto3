@@ -16,14 +16,18 @@ const DeleteDialog = () => {
     const toast = useRef(null);
 
     const deleteCompany = async () => {
-        DelCompany(selectCompany.id)
-        setUpdateData(true);
-        setDeleteDialog(false);
-        setSelectCompany();
-        toast.current.show({
-            severity: 'success', summary: 'Successful',
-            detail: 'Empresa Deletada', life: 3000
-        });
+        try {
+            DelCompany(selectCompany.id)
+            setDeleteDialog(false);
+            setSelectCompany();
+            toast.current.show({
+                severity: 'success', summary: 'Successful',
+                detail: 'Empresa Deletada', life: 3000
+            });
+            await setUpdateData(true);
+        }catch (error) {
+            console.log('Erro ao apagar empresa', error);
+        }
     };
 
     const hideDeleteDialog = () => {

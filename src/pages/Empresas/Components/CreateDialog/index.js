@@ -22,6 +22,15 @@ const CreateDialog = (props) => {
     const toast = useRef(null);
     const [submitted, setSubmitted] = useState(false);
 
+    const usetoast = (severity, summary, detail) => {
+        toast.current.show({
+            severity: severity,
+            summary: summary,
+            detail: detail,
+            life: 3000,
+        });
+    };
+
     const handleChange = e => {
         const { name, value } = e.target;
         setSelectCompany({
@@ -41,53 +50,47 @@ const CreateDialog = (props) => {
     };
 
     const register = async () => {
-        // console.log(selectCompany);
-        if (selectCompany.cnpj?.length === 14 && selectCompany.cnae?.length === 7 && selectCompany.endereco?.cep !== undefined) {
-            CreateCompany(selectCompany)
-            setUpdateData(true);
-            setCreateDialog(false);
-            setSelectCompany();
-            toast.current.show({
-                severity: 'success', summary: 'Successful',
-                detail: 'Cadastrado com Sucesso', life: 3000
-            });
-        } else {
-            toast.current.show({
-                severity: "error",
-                summary: "Erro",
-                detail: "Falha ao Cadastras revise os dados",
-                life: 3000,
-            });
-            if(selectCompany.cnpj?.length !== 14 && selectCompany.cnpj !== undefined && selectCompany.cnpj !== ""){
-                toast.current.show({
-                    severity: "error",
-                    summary: "Erro",
-                    detail: "CNPJ invalido",
-                    life: 3000,
-                });
+        setSubmitted(true);
+
+        try {
+            const CNPJVerify = await fetch(`https://localhost:7149/Empresa/BuscarPorCnpj/${selectCompany.cnpj}`)
+            if (selectCompany.cnpj?.length === 14
+                && selectCompany.cnae?.length === 7
+                && selectCompany.nomeEmpresarial?.length >= 8
+                && selectCompany.nomeFantasia?.length >= 8
+                && selectCompany.endereco?.numero !== undefined
+                && selectCompany.endereco?.cep !== undefined
+                && CNPJVerify.status === 404) {
+                CreateCompany(selectCompany)
+                setCreateDialog(false);
+                setSubmitted(false);
+                setSelectCompany();
+                usetoast("success", "Sucesso", "Cadastrado com Sucesso")
+                setUpdateData(true);
+            } else {
+                usetoast("error", "Erro", "Falha ao Cadastras revise os dados")
+
+                if (selectCompany.cnpj?.length !== 14 && selectCompany.cnpj !== undefined && selectCompany.cnpj !== "") {
+                    usetoast("error", "Erro", "CNPJ invalido")
+                }
+                if (selectCompany.cnae?.length !== 7 && selectCompany.cnae !== undefined && selectCompany.cnae !== "") {
+                    usetoast("error", "Erro", "CNAE invalido")
+                }
+                if (selectCompany.endereco?.cep === undefined &&
+                    ((selectCompany.cnae !== undefined && selectCompany.cnpj !== "")
+                        || (selectCompany.cnpj !== undefined && selectCompany.cnae !== ""))) {
+                    usetoast("error", "Erro", "Endereço invalido")
+                }
             }
-            if(selectCompany.cnae?.length !== 7 && selectCompany.cnae !== undefined && selectCompany.cnae !== ""){
-                toast.current.show({
-                    severity: "error",
-                    summary: "Erro",
-                    detail: "CNAE invalido",
-                    life: 3000,
-                });
-            }
-            if(selectCompany.endereco?.cep === undefined &&
-                 ((selectCompany.cnae !== undefined && selectCompany.cnpj !== "") 
-                 || (selectCompany.cnpj !== undefined && selectCompany.cnae !== ""))){
-                toast.current.show({
-                    severity: "error",
-                    summary: "Erro",
-                    detail: "Endereço invalido",
-                    life: 3000,
-                });
-            }
+        } catch (error) {
+            console.log('Erro ao cadastrar empresa', error);
         }
+
     };
 
     const hideDialog = () => {
+        setSelectCompany();
+        setSubmitted(false);
         setCreateDialog(false);
         toast.current.show({
             severity: "warn",
@@ -123,17 +126,13 @@ const CreateDialog = (props) => {
                             rua: data.logradouro
                         }
                     });
-                }else{
+                    usetoast("success", "Sucesso", "Cep encontrado")
+                } else {
                     setSelectCompany({
                         ...selectCompany,
                         endereco: undefined
                     });
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Erro",
-                        detail: "Cep não encontrado",
-                        life: 3000,
-                    });
+                    usetoast("error", "Erro", "Cep não encontrado")
                 }
             } else {
                 throw new Error('Erro na busca do endereço');
@@ -156,14 +155,42 @@ const CreateDialog = (props) => {
                 <div className="card flex flex-column md:flex-row gap-3">
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Nome Fantasia</label>
-                            <InputText name="nomeFantasia" onChange={handleChange} required autoFocus />
+                            <label htmlFor="nomeFantasia" className="font-bold">Nome Fantasia</label>
+                            <InputText name="nomeFantasia" onChange={handleChange} autoFocus required maxlength={120} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectCompany.nomeFantasia)
+                            })} />
+                            {submitted && !selectCompany.nomeFantasia && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="Nome Fantasia é obrigatorio"
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Nome Empresarial</label>
-                            <InputText name="nomeEmpresarial" onChange={handleChange} required />
+                            <label htmlFor="nomeEmpresarial" className="font-bold">Nome Empresarial</label>
+                            <InputText name="nomeEmpresarial" onChange={handleChange} required maxlength={120} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectCompany.nomeEmpresarial)
+                            })} />
+                            {submitted && !selectCompany.nomeEmpresarial && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="Nome Empresarial é obrigatorio"
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -171,11 +198,11 @@ const CreateDialog = (props) => {
                 <div className="card flex flex-column md:flex-row gap-3">
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">CNPJ</label>
+                            <label htmlFor="cnpj" className="font-bold">CNPJ</label>
                             <InputMask mask="99.999.999/9999-99" unmask name="cnpj" autoClear={false} onChange={handleChange} required className={classNames({
                                 "p-invalid":
                                     (submitted && !selectCompany.cnpj) ||
-                                    (submitted && selectCompany.cnpj.length < 14),
+                                    (submitted && selectCompany.cnpj?.length < 14)
                             })} />
                             {submitted && !selectCompany.cnpj && (
                                 <Message
@@ -188,7 +215,7 @@ const CreateDialog = (props) => {
                                     text="CNPJ é obrigatorio"
                                 />
                             )}
-                            {submitted && selectCompany.cnpj.length < 14 && (
+                            {submitted && selectCompany.cnpj?.length < 14 && (
                                 <Message
                                     style={{
                                         background: "none",
@@ -203,8 +230,34 @@ const CreateDialog = (props) => {
                     </div>
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">CNAE</label>
-                            <InputMask mask="9999-9/99" unmask name="cnae" autoClear={false} onChange={handleChange} required />
+                            <label htmlFor="cnae" className="font-bold">CNAE</label>
+                            <InputMask mask="9999-9/99" unmask name="cnae" autoClear={false} onChange={handleChange} required className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectCompany.cnae) ||
+                                    (submitted && selectCompany.cnae?.length < 7)
+                            })} />
+                            {submitted && !selectCompany.cnae && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="CNAE é obrigatorio"
+                                />
+                            )}
+                            {submitted && selectCompany.cnae?.length < 7 && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="CNAE tem 7 numeros."
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -212,13 +265,27 @@ const CreateDialog = (props) => {
                 <div className="card flex flex-column md:flex-row gap-3">
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Natureza Juridica</label>
-                            <InputText name="naturezaJuridica" onChange={handleChange} required />
+                            <label htmlFor="naturezaJuridica" className="font-bold">Natureza Juridica</label>
+                            <InputText name="naturezaJuridica" onChange={handleChange} required maxlength={50} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectCompany.naturezaJuridica)
+                            })} />
+                            {submitted && !selectCompany.naturezaJuridica && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="Natureza Juridica é obrigatorio"
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Data de Abertura</label>
+                            <label htmlFor="dataAbertura" className="font-bold">Data de Abertura</label>
                             <InputMask mask="99/99/9999" name="dataAbertura" autoClear={false} onChange={handleChange} />
                         </div>
                     </div>
@@ -227,13 +294,13 @@ const CreateDialog = (props) => {
                 <div className="card flex flex-column md:flex-row gap-3">
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Telefone</label>
+                            <label htmlFor="telefone" className="font-bold">Telefone</label>
                             <InputMask mask="(99)99999-9999" unmask name="telefone" autoClear={false} onChange={handleChange} />
                         </div>
                     </div>
                     <div className="p-fluid flex-1">
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Capital</label>
+                            <label htmlFor="capital" className="font-bold">Capital</label>
                             <InputNumber name="capital" onValueChange={handleChange} mode="currency" currency="BRL" locale="pt-BR" />
                         </div>
                     </div>
@@ -244,22 +311,36 @@ const CreateDialog = (props) => {
                     <hr></hr>
                     <div className="card flex flex-column md:flex-row gap-3">
                         <div className=" field">
-                            <label htmlFor="name" className="font-bold">cep</label>
-                            <InputMask mask="99.999-999" name="endereco.cep" onBlur={CEP} autoClear={false} required />
+                            <label htmlFor="cep" className="font-bold">cep</label>
+                            <InputMask mask="99.999-999" name="endereco.cep" onBlur={CEP} autoClear={false} required className={classNames({
+                                "p-invalid":
+                                    (submitted && selectCompany.endereco?.cep === undefined)
+                            })} />
+                            {submitted && !selectCompany.endereco && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="CEP não encontrado"
+                                />
+                            )}
                         </div>
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Estado</label>
+                            <label htmlFor="estado" className="font-bold">Estado</label>
                             <InputText name="endereco.estado" value={selectCompany?.endereco && selectCompany?.endereco.estado} disabled readOnly />
                         </div>
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Cidade</label>
+                            <label htmlFor="cidade" className="font-bold">Cidade</label>
                             <InputText name="endereco.cidade" value={selectCompany?.endereco && selectCompany?.endereco.cidade} disabled readOnly />
                         </div>
                     </div>
 
                     <div className="card flex flex-column md:flex-row gap-3">
                         <div className=" field">
-                            <label htmlFor="name" className="font-bold">Rua</label>
+                            <label htmlFor="rua" className="font-bold">Rua</label>
                             <InputText name="endereco.rua" value={selectCompany?.endereco && selectCompany?.endereco.rua} disabled readOnly />
                         </div>
                         <div className="field">
@@ -267,8 +348,21 @@ const CreateDialog = (props) => {
                             <InputText name="endereco.bairro" value={selectCompany?.endereco && selectCompany?.endereco.bairro} disabled readOnly />
                         </div>
                         <div className="field">
-                            <label htmlFor="name" className="font-bold">Numero</label>
-                            <InputText name="endereco.numero" onChange={handleNumberChange} required />
+                            <label htmlFor="numero" className="font-bold">Numero</label>
+                            <InputText name="endereco.numero" onChange={handleNumberChange} required className={classNames({
+                                "p-invalid": submitted && !selectCompany.endereco?.numero
+                            })} />
+                            {submitted && !selectCompany.endereco?.numero && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="Numero é obrigatório."
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

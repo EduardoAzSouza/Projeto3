@@ -3,11 +3,9 @@ import Table from "./Components/Table"
 
 const Empresas = () => {
     return (
-      <section>
         <CompanyContextProvider>
           <Table />
         </CompanyContextProvider>
-      </section>
     )
   }
   

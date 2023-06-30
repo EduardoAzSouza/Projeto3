@@ -24,6 +24,12 @@ const UsersDialog = () => {
     }
     });
 
+    const Header = (
+        <div className="table-header">
+            {selectCompany?.nomeFantasia}
+        </div>
+    )
+
     const hideUsersDialog = () => {
         setUsersDialog(false);
     };
@@ -34,7 +40,7 @@ const UsersDialog = () => {
                 <Toast ref={toast} />
                 <Dialog visible={usersDialog} style={{ width: '50rem' }}
                     breakpoints={{ '960px': '75vw', '641px': '90vw' }}
-                    header="usuarios da empresa"
+                    header={Header}
                     onHide={hideUsersDialog}>
                     <div className="card">
                         <DataTable

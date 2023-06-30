@@ -16,14 +16,19 @@ const StatusDialog = () => {
     const toast = useRef(null);
 
     const updateStatus = async () => {
-        StatusUpdateC(selectCompany.id)
-        setStatusDialog(false);
-        setSelectCompany();
-        toast.current.show({
-            severity: 'success', summary: 'Ataulizado',
-            detail: 'status Atualizado', life: 3000
-        });
-        setUpdateData(true);
+        try {
+            StatusUpdateC(selectCompany.id)
+            setStatusDialog(false);
+            setSelectCompany();
+            toast.current.show({
+                severity: 'success', summary: 'Ataulizado',
+                detail: 'status Atualizado', life: 3000
+            });
+            setUpdateData(true);
+        } catch (error) {
+            console.log('Erro ao alterar status', error);
+        }
+
     };
 
     const hideStatusDialog = () => {

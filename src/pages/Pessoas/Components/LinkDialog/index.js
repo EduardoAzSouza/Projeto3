@@ -2,7 +2,6 @@ import React, { useRef, useContext, useState } from 'react';
 import { PersonContext } from '../../../../Contexts/PersonContext';
 import { useAxios } from "../../../../hooks/useAxios";
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { InputNumber } from 'primereact/inputnumber';
@@ -20,13 +19,17 @@ const UpdateDialog = (props) => {
     const [companyId, setcompanyId] = useState(0);
 
     const Link = async () => {
-        LinkCompany(selectPerson.id, companyId)
-        setUpdateData(true);
-        setLinkDialog(false);
-        toast.current.show({
-            severity: 'success', summary: 'Successful',
-            detail: 'Atualizado com Sucesso', life: 3000
-        });
+        try {
+            LinkCompany(selectPerson.id, companyId)
+            setLinkDialog(false);
+            toast.current.show({
+                severity: 'success', summary: 'Successful',
+                detail: 'Atualizado com Sucesso', life: 3000
+            });
+            await setUpdateData(true);
+        } catch (error) {
+            console.log('Erro ao vincular', error);
+        }
     };
 
     const hideLinkDialog = () => {
@@ -61,11 +64,11 @@ const UpdateDialog = (props) => {
                     </div>
                     <h1> </h1>
                     <div className="field">
-                    <label htmlFor="name" className="font-bold">ID da empresa</label>
-                    <div className="p-inputgroup">
-                        <InputNumber name="IdEmpresa" onValueChange={(e) => setcompanyId(e.value)} required />
+                        <label htmlFor="name" className="font-bold">ID da empresa</label>
+                        <div className="p-inputgroup">
+                            <InputNumber name="IdEmpresa" onValueChange={(e) => setcompanyId(e.value)} required />
+                        </div>
                     </div>
-                </div>
                 </Dialog>
             </React.Fragment>
         </div>

@@ -60,7 +60,7 @@ export const useAxios = () => {
     }
 
     const LinkCompany = async (id, idc) => {
-        await axios.put("https://localhost:7149/Pessoas/vincular_empresa/",id,"/",idc)
+        await axios.put(`https://localhost:7149/Pessoas/vincular_empresa/${id}/${idc}`)
     }
 
     return {

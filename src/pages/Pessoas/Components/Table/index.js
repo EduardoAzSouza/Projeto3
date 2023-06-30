@@ -52,6 +52,8 @@ export default function Table() {
         if (updateData) {
             GetAllPeople();
             setUpdateData(false);
+            fetch("https://localhost:7149/Empresa/BuscarTodasEmpresas")
+            .then(response => response.json());
         }
     }, [GetAllPeople, updateData, setUpdateData,]);
 
@@ -61,6 +63,7 @@ export default function Table() {
     //         setUpdateData(false);
     //     }
     // }, [updateData]);
+
 
     const openNew = () => {
         setSelectPerson();
@@ -131,6 +134,16 @@ export default function Table() {
         </div>
     );
 
+    const cpfFormat = (rowData) => {
+        return rowData.documento?.replace(/\D/g, '')
+            .replace(/^(\d{3})(\d{3})(\d{3})(\d{2})?/, "$1.$2.$3-$4");
+    };
+
+    const telFormat = (rowData) => {
+        return rowData.telefone?.replace(/\D/g, '')
+        .replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3");
+    };
+
     return (
         <div>
             <Toast ref={toast} />
@@ -147,8 +160,8 @@ export default function Table() {
                     header={header}>
                     <Column field="id" header="ID" sortable style={{ minWidth: '4rem', textAlign: 'center' }}></Column>
                     <Column field="nome" header="Nome" sortable style={{ minWidth: '18rem' }}></Column>
-                    <Column field="documento" sortable header="CPF"></Column>
-                    <Column field="telefone" sortable header="Telefone"></Column>
+                    <Column field="documento" sortable body={cpfFormat} header="CPF"></Column>
+                    <Column field="telefone" sortable body={telFormat} header="Telefone"></Column>
                     <Column field="usuario" sortable header="Usuario"></Column>
                     <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ textAlign: 'center' }}></Column>
                     <Column field="empresaId" sortable header="Empresa" style={{ textAlign: 'center' }} ></Column>

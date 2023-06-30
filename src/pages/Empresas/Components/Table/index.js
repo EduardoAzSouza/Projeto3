@@ -46,7 +46,7 @@ export default function Table() {
             GetAllCompanies();
             setUpdateData(false);
         }
-    }, [GetAllCompanies, setUpdateData, updateData]);
+    });
 
     const openNew = () => {
         setSelectCompany();
@@ -196,7 +196,7 @@ export default function Table() {
     };
 
     const cnpjformat = (rowData) => {
-        return rowData.cnpj.replace(/\D/g, '')
+        return rowData.cnpj?.replace(/\D/g, '')
             .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5");
     };
 

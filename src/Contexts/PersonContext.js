@@ -17,6 +17,7 @@ export const PersonContextProvider = ({ children }) => {
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [statusDialog, setStatusDialog] = useState(false);
     const [linkDialog, setLinkDialog] = useState(false);
+    const [updatecompanies, setupdatecompanies] = useState(false)
     const [companiesDialog, setCompanyDialog] = useState(false);
 
 
@@ -37,7 +38,9 @@ export const PersonContextProvider = ({ children }) => {
         linkDialog,
         setLinkDialog,
         companiesDialog,
-        setCompanyDialog
+        setCompanyDialog,
+        updatecompanies, 
+        setupdatecompanies
     };
 
     return (

@@ -152,7 +152,7 @@ const UpdateDialog = (props) => {
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Nome Fantasia</label>
                             <InputText name="nomeFantasia" value={selectCompany && selectCompany.nomeFantasia}
-                                onChange={handleChange} required autoFocus maxlength={120} className={classNames({
+                                onChange={handleChange} required autoFocus maxLength={120} className={classNames({
                                     "p-invalid":
                                         (submitted && !selectCompany.nomeFantasia)
                                 })} />
@@ -173,7 +173,7 @@ const UpdateDialog = (props) => {
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Nome Fantasia</label>
                             <InputText name="nomeEmpresarial" value={selectCompany && selectCompany.nomeEmpresarial}
-                                onChange={handleChange} required maxlength={120} className={classNames({
+                                onChange={handleChange} required maxLength={120} className={classNames({
                                     "p-invalid":
                                         (submitted && !selectCompany.nomeEmpresarial)
                                 })} />
@@ -239,7 +239,7 @@ const UpdateDialog = (props) => {
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Natureza Juridica</label>
                             <InputText name="naturezaJuridica" value={selectCompany && selectCompany.naturezaJuridica}
-                                onChange={handleChange} required maxlength={50} className={classNames({
+                                onChange={handleChange} required maxLength={50} className={classNames({
                                     "p-invalid":
                                         (submitted && !selectCompany.naturezaJuridica)
                                 })} />

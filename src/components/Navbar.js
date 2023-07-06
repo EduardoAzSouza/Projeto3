@@ -24,7 +24,7 @@ const Navbar = () => {
           <img src={logo} alt="logo"/>
         </div>
       </Link>
-      <div class="switchtheme">
+      <div id="switchtheme">
           <Button rounded outlined
             className={`${theme === 'dark' ? 'bg-gray-100 text-black' : 'bg-gray-700 text-white'}`}
             onClick={() => changeMyTheme()}>

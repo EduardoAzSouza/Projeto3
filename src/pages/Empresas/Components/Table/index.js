@@ -42,6 +42,7 @@ export default function Table() {
     const toast = useRef(null);
 
     useEffect(() => {
+        console.log(updateData)
         if (updateData) {
             GetAllCompanies();
             setUpdateData(false);
@@ -75,18 +76,6 @@ export default function Table() {
     };
 
     const actionBodyTemplate = (rowData) => {
-        // const items = [
-        //     {
-        //         label: 'Ataulizar Status',
-        //         icon: 'pi pi-verified',
-        //         command: () => confirmStatus(rowData)
-        //     },
-        //     {
-        //         label: 'Ver todas Pessoas',
-        //         icon: 'pi pi-users',
-        //         command: () => confirmUsers(rowData)
-        //     }
-        // ];
 
         return (
             <React.Fragment>
@@ -94,10 +83,6 @@ export default function Table() {
                 <Button icon="pi pi-trash" rounded outlined className="mr-1" severity="danger" onClick={() => confirmDelete(rowData)} />
                 <Button icon="pi pi-verified" rounded outlined className="mr-1" severity="warning" onClick={() => confirmStatus(rowData)} />
                 <Button icon="pi pi-users" rounded outlined className="mr-1" severity="success" onClick={() => confirmUsers(rowData)} />
-
-                {/* <Menu model={items} popup ref={options} id="options" />
-                <Button icon="pi pi-ellipsis-h" rounded outlined severity="info" model={items}
-                    onClick={(rowData) => options.current.toggle(rowData)} aria-controls="options" aria-haspopup /> */}
             </React.Fragment>
         );
     };

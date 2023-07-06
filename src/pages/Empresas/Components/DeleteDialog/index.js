@@ -17,15 +17,28 @@ const DeleteDialog = () => {
 
     const deleteCompany = async () => {
         try {
-            DelCompany(selectCompany.id)
-            setDeleteDialog(false);
-            setSelectCompany();
-            toast.current.show({
-                severity: 'success', summary: 'Successful',
-                detail: 'Empresa Deletada', life: 3000
-            });
-            await setUpdateData(true);
-        }catch (error) {
+            const peopleListVerify = await fetch(`https://localhost:7149/Empresa/TodasPessoasEmpresa/${selectCompany.id}`)
+            const data = await peopleListVerify.json();
+            const keys = Object.keys(data);
+            
+            if (keys.length === 0) {
+                DelCompany(selectCompany.id)
+                setDeleteDialog(false);
+                setSelectCompany();
+                toast.current.show({
+                    severity: 'success', summary: 'Successful',
+                    detail: 'Empresa Deletada', life: 3000
+                });
+                await setUpdateData(true);
+            }
+            else {
+                setDeleteDialog(false);
+                toast.current.show({
+                    severity: 'error', summary: 'Error',
+                    detail: 'Falha ao deletar empresa, deve haver pessoas cadastradas na empresa', life: 3000
+                });
+            }
+        } catch (error) {
             console.log('Erro ao apagar empresa', error);
         }
     };

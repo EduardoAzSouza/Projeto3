@@ -12,12 +12,13 @@ import StatusDialog from '../StatusDialog';
 import CreateDialog from '../CreateDialog';
 import UpdateDialog from '../UpdateDialog';
 import LinkDialog from '../LinkDialog';
-import axios from "axios";
 
 export default function Table() {
     const {
+        data,
         dataP,
-        GetAllPeople
+        GetAllPeople,
+        GetAllCompanies
     } = useAxios();
 
     const {
@@ -33,27 +34,18 @@ export default function Table() {
         statusDialog,
         setStatusDialog,
         linkDialog,
-        setLinkDialog
+        setLinkDialog,
+        setupdatecompanies
     } = useContext(PersonContext);
 
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
 
-    // const [dataP, setDataP] = useState([]);
-
-    // const GetAllPeople = async () => {
-    //     await axios.get("https://localhost:7149/Pessoas/BuscarTodasPessoas")
-    //         .then(response => {
-    //             setDataP(response.data);
-    //         });
-    // }
-
     useEffect(() => {
         if (updateData) {
             GetAllPeople();
+            GetAllCompanies();
             setUpdateData(false);
-            fetch("https://localhost:7149/Empresa/BuscarTodasEmpresas")
-            .then(response => response.json());
         }
     }, [GetAllPeople, updateData, setUpdateData,]);
 
@@ -87,8 +79,14 @@ export default function Table() {
 
     const confirmLink = (selectPerson) => {
         setSelectPerson(selectPerson);
+        setupdatecompanies(true);
         setLinkDialog(true);
     }
+
+    const companyId = (rowData) => {
+        const empresa = data.find(item => item.id === rowData.empresaId);
+        return empresa ? empresa.nomeFantasia : '';
+    };
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -141,7 +139,7 @@ export default function Table() {
 
     const telFormat = (rowData) => {
         return rowData.telefone?.replace(/\D/g, '')
-        .replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3");
+            .replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3");
     };
 
     return (
@@ -164,7 +162,7 @@ export default function Table() {
                     <Column field="telefone" sortable body={telFormat} header="Telefone"></Column>
                     <Column field="usuario" sortable header="Usuario"></Column>
                     <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ textAlign: 'center' }}></Column>
-                    <Column field="empresaId" sortable header="Empresa" style={{ textAlign: 'center' }} ></Column>
+                    <Column field="empresaId" sortable body={companyId} header="Empresa" style={{ textAlign: 'center' }} ></Column>
                     <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '10rem' }}></Column>
                 </DataTable>
 

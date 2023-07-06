@@ -5,6 +5,7 @@ export const useAxios = () => {
     const [data, setData] = useState([]);
     const [dataP, setDataP] = useState([]);
     const [users, setUsers] = useState([]);
+    const [comp, setComp] =useState([]);
 
     const GetAllCompanies = async () => {
         await axios.get("https://localhost:7149/Empresa/BuscarTodasEmpresas")
@@ -18,6 +19,13 @@ export const useAxios = () => {
             .then(response => {
                 setDataP(response.data);
             });
+    }
+
+    const GetCompany = async (id) => {
+        await axios.get("https://localhost:7149/Pessoas/BuscarPorId/" + id)
+        .then(response => {
+            setComp(response.data);
+        });
     }
 
     const DelCompany = async (id) => {
@@ -67,6 +75,7 @@ export const useAxios = () => {
         data,
         dataP,
         users,
+        comp,
         GetAllCompanies,
         GetAllPeople,
         CreateCompany,

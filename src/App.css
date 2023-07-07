@@ -1,5 +1,11 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .container {
-  min-height: 70vh;
   margin-left: 2vh;
   margin-right: 2vh;
+  flex-grow: 1;
 }

@@ -6,9 +6,10 @@ import Footer from "./components/Footer";
 import Navbar from './components/Navbar';
 
 // pages
-import Pessoas from "./pages/Pessoas/";
+import Pessoas from "./pages/Pessoas";
 import Empresas from "./pages/Empresas";
-import Dashboard from "./pages/Dashboard/Dashboard";
+import Home from "./pages/Home";
+import NotFound from './pages/NotFound';
 
 function App() {
 
@@ -20,7 +21,7 @@ function App() {
           <Routes>
             <Route
             path='/'
-            element={ <Dashboard /> }  
+            element={ <Home /> }  
             />  
             <Route
             path="/pessoas"
@@ -29,6 +30,10 @@ function App() {
             <Route
             path="/empresas"
             element={ <Empresas />}
+            />
+            <Route
+            path="*"
+            element={ <NotFound />}
             />
           </Routes>
         </div>

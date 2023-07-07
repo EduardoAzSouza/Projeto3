@@ -1,4 +1,5 @@
-import { PersonContextProvider } from "../../Contexts/PersonContext";
+import React from 'react'
+import PersonContextProvider  from "../../Contexts/PersonContext";
 import Table from "../Pessoas/Components/Table"
 
 const Pessoas = () => {

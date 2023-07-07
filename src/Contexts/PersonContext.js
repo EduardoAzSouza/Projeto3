@@ -1,8 +1,8 @@
-import { createContext, useState } from "react";
+import React, { createContext, useState } from "react";
 
 export const PersonContext = createContext();
 
-export const PersonContextProvider = ({ children }) => {
+function PersonContextProvider ({ children }) {
     let empty = {
         nome: '',
         documento: '',
@@ -22,7 +22,6 @@ export const PersonContextProvider = ({ children }) => {
 
 
     const vars = {
-        empty,
         updateData,
         setUpdateData,
         createDialog,
@@ -49,3 +48,4 @@ export const PersonContextProvider = ({ children }) => {
         </PersonContext.Provider>
     );
 };
+export default PersonContextProvider

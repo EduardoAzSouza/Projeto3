@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Title, Header } from "../../../../components/styled";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
@@ -40,6 +41,7 @@ export default function Table() {
 
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
+    console.log(updateData)
 
     useEffect(() => {
         if (updateData) {
@@ -47,7 +49,11 @@ export default function Table() {
             GetAllCompanies();
             setUpdateData(false);
         }
-    }, [GetAllPeople, updateData, setUpdateData,]);
+    }, [GetAllPeople,
+        updateData,
+        setUpdateData,
+        GetAllCompanies,
+    ]);
 
     // useEffect(() => {
     //     if (updateData) {
@@ -120,16 +126,16 @@ export default function Table() {
     };
 
     const header = (
-        <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+        <Header>
             <div className="flex flex-wrap gap-2">
                 <Button label="Cadastrar" icon="pi pi-plus" severity="success" onClick={openNew} />
             </div>
-            <h1 className="m-0">Pessoas</h1>
+            <Title>Pessoas</Title>
             <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Pesquisar..." />
             </span>
-        </div>
+        </Header>
     );
 
     const cpfFormat = (rowData) => {
@@ -163,7 +169,7 @@ export default function Table() {
                     <Column field="usuario" sortable header="Usuario"></Column>
                     <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ textAlign: 'center' }}></Column>
                     <Column field="empresaId" sortable body={companyId} header="Empresa" style={{ textAlign: 'center' }} ></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '10rem' }}></Column>
+                    <Column body={actionBodyTemplate} exportable={false} style={{ maxWidth: '12rem' }}></Column>
                 </DataTable>
 
                 <DeleteDialog visible={deleteDialog} />

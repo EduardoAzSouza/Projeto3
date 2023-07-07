@@ -31,6 +31,7 @@ const Navbar = () => {
             <span className={`pr-1 pi pi-${theme === 'dark' ? 'sun' : 'moon'}`}></span>
           </Button>
       </div>
+      <div>
       <ul id="nav-links">
         <li>
           <NavLink to="/pessoas">
@@ -43,6 +44,7 @@ const Navbar = () => {
           </NavLink>
         </li>
       </ul>
+      </div>
     </nav>
   );
 };

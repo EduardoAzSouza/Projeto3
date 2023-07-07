@@ -24,6 +24,7 @@ const UpdateDialog = ({ companyValue, personValue }) => {
     const toast = useRef(null);
 
     const [confirmLinkDialog, setConfirmLinkDialog] = useState(false);
+    const [confirmUnlinkDialog, setConfirmUnlinkDialog] = useState(false);
     const [selectCompany, setselectCompany] = useState([]);
     const [linkedCompany, setlinkedCompany] = useState([]);
 
@@ -55,6 +56,7 @@ const UpdateDialog = ({ companyValue, personValue }) => {
         try {
             LinkCompany(selectPerson.id, 0)
             setLinkDialog(false);
+            setConfirmUnlinkDialog(false);
             toast.current.show({
                 severity: 'success', summary: 'Successful',
                 detail: 'Desvinculado com Sucesso', life: 3000
@@ -79,6 +81,10 @@ const UpdateDialog = ({ companyValue, personValue }) => {
         setConfirmLinkDialog(false);
     };
 
+    const hideConfirmUnlinkDialog = () => {
+        setConfirmUnlinkDialog(false);
+    };
+
     const cnpjformat = (rowData) => {
         return rowData.cnpj?.replace(/\D/g, '')
             .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5");
@@ -87,6 +93,10 @@ const UpdateDialog = ({ companyValue, personValue }) => {
     const confirmLink = (selectCompany) => {
         setselectCompany(selectCompany)
         setConfirmLinkDialog(true);
+    };
+
+    const confirmUnlink = () => {
+        setConfirmUnlinkDialog(true);
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -110,6 +120,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
         </React.Fragment>
     );
 
+    const confirmUnlinkFooter = (
+        <React.Fragment>
+            <Button label="Não" icon="pi pi-times" outlined onClick={hideConfirmUnlinkDialog} />
+            <Button label="Sim" icon="pi pi-check" severity="danger" onClick={() => unLink()} />
+        </React.Fragment>
+    );
+
     return (
         <div>
             <React.Fragment>
@@ -121,18 +138,20 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                         breakpoints={{ '960px': '75vw', '641px': '90vw' }}
                         visible={linkDialog}
                         onHide={hideLinkDialog}>
-                        <Button label="desvincular empresa" icon="pi pi-check" severity="danger" onClick={() => unLink()} />
+                        <div className="field">
+                            <Button label="desvincular empresa" icon="pi pi-check" severity="danger" onClick={() => confirmUnlink()} />
+                        </div>
                         <div className="card flex flex-column md:flex-row gap-3">
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Nome Fantasia</label>
-                                    <InputText name="nomeFantasia" value={linkedCompany && linkedCompany.nomeFantasia} disabled/>
+                                    <InputText name="nomeFantasia" value={linkedCompany && linkedCompany.nomeFantasia} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Nome Fantasia</label>
-                                    <InputText name="nomeEmpresarial" value={linkedCompany && linkedCompany.nomeEmpresarial} disabled/>
+                                    <InputText name="nomeEmpresarial" value={linkedCompany && linkedCompany.nomeEmpresarial} disabled />
                                 </div>
                             </div>
                         </div>
@@ -141,13 +160,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">CNPJ</label>
-                                    <InputMask mask="99.999.999/9999-99" unmask name="cnpj" value={linkedCompany && linkedCompany.cnpj} disabled/>
+                                    <InputMask mask="99.999.999/9999-99" unmask name="cnpj" value={linkedCompany && linkedCompany.cnpj} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">CNAE</label>
-                                    <InputMask mask="9999-9/99" unmask name="cnae" value={linkedCompany && linkedCompany.cnae} disabled/>
+                                    <InputMask mask="9999-9/99" unmask name="cnae" value={linkedCompany && linkedCompany.cnae} disabled />
                                 </div>
                             </div>
                         </div>
@@ -156,13 +175,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Natureza Juridica</label>
-                                    <InputText name="naturezaJuridica" value={linkedCompany && linkedCompany.naturezaJuridica} disabled/>
+                                    <InputText name="naturezaJuridica" value={linkedCompany && linkedCompany.naturezaJuridica} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Data de Abertura</label>
-                                    <InputMask mask="99/99/9999" name="dataAbertura" value={linkedCompany && linkedCompany.dataAbertura} disabled/>
+                                    <InputMask mask="99/99/9999" name="dataAbertura" value={linkedCompany && linkedCompany.dataAbertura} disabled />
                                 </div>
                             </div>
                         </div>
@@ -171,24 +190,23 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Telefone</label>
-                                    <InputMask mask="(99)99999-9999" unmask name="telefone" value={linkedCompany && linkedCompany.telefone} disabled/>
+                                    <InputMask mask="(99)99999-9999" unmask name="telefone" value={linkedCompany && linkedCompany.telefone} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Capital</label>
-                                    <InputNumber name="capital" value={linkedCompany && linkedCompany.capital} mode="currency" currency="BRL" locale="pt-BR" disabled/>
+                                    <InputNumber name="capital" value={linkedCompany && linkedCompany.capital} mode="currency" currency="BRL" locale="pt-BR" disabled />
                                 </div>
                             </div>
                         </div>
-
                         <div className="card">
                             <h3>Endereço</h3>
                             <hr></hr>
                             <div className="card flex flex-column md:flex-row gap-3">
                                 <div className=" field">
                                     <label htmlFor="name" className="font-bold">cep</label>
-                                    <InputMask mask="99.999-999" name="endereco.cep" value={linkedCompany?.endereco && linkedCompany?.endereco.cep} disabled/>
+                                    <InputMask mask="99.999-999" name="endereco.cep" value={linkedCompany?.endereco && linkedCompany?.endereco.cep} disabled />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Estado</label>
@@ -248,6 +266,21 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                     </div>
                 </Dialog>
 
+                <Dialog visible={confirmUnlinkDialog} style={{ width: '32rem' }}
+                    breakpoints={{ '960px': '75vw', '641px': '90vw' }}
+                    header="Confirme"
+                    modal footer={confirmUnlinkFooter}
+                    onHide={hideConfirmUnlinkDialog}>
+                    <div className="confirmation-content">
+                        <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                        {selectPerson && (
+                            <span>
+                                Você tem certeza que deseja desvincular<br></br>
+                                <b>{selectPerson.nome}</b> à <b>{linkedCompany?.nomeFantasia}</b>?
+                            </span>
+                        )}
+                    </div>
+                </Dialog>
 
             </React.Fragment>
         </div>

@@ -11,7 +11,7 @@ import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 
 const UpdateDialog = ({ companyValue, personValue }) => {
-    const { data, GetAllCompanies, LinkCompany } = useAxios();
+    const { data, comp, GetAllCompanies, LinkCompany, GetCompany } = useAxios();
     const {
         setUpdateData,
         linkDialog,
@@ -26,13 +26,14 @@ const UpdateDialog = ({ companyValue, personValue }) => {
     const [confirmLinkDialog, setConfirmLinkDialog] = useState(false);
     const [confirmUnlinkDialog, setConfirmUnlinkDialog] = useState(false);
     const [selectCompany, setselectCompany] = useState([]);
-    const [linkedCompany, setlinkedCompany] = useState([]);
-
+    console.log(comp)
     useEffect(() => {
         if (updatecompanies) {
             GetAllCompanies();
+            if (selectPerson.empresaId !== null){
+                GetCompany(selectPerson.empresaId)
+            }
             setupdatecompanies(false);
-            company();
         }
     });
 
@@ -65,11 +66,6 @@ const UpdateDialog = ({ companyValue, personValue }) => {
         } catch (error) {
             console.log('Erro ao desvincular', error);
         }
-    };
-
-    const company = () => {
-        const empresa = data.find(item => item.id === selectPerson.empresaId);
-        setlinkedCompany(empresa)
     };
 
     const hideLinkDialog = () => {
@@ -145,13 +141,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Nome Fantasia</label>
-                                    <InputText name="nomeFantasia" value={linkedCompany && linkedCompany.nomeFantasia} disabled />
+                                    <InputText name="nomeFantasia" value={comp && comp.nomeFantasia} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Nome Fantasia</label>
-                                    <InputText name="nomeEmpresarial" value={linkedCompany && linkedCompany.nomeEmpresarial} disabled />
+                                    <InputText name="nomeEmpresarial" value={comp && comp.nomeEmpresarial} disabled />
                                 </div>
                             </div>
                         </div>
@@ -160,13 +156,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">CNPJ</label>
-                                    <InputMask mask="99.999.999/9999-99" unmask name="cnpj" value={linkedCompany && linkedCompany.cnpj} disabled />
+                                    <InputMask mask="99.999.999/9999-99" unmask name="cnpj" value={comp && comp.cnpj} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">CNAE</label>
-                                    <InputMask mask="9999-9/99" unmask name="cnae" value={linkedCompany && linkedCompany.cnae} disabled />
+                                    <InputMask mask="9999-9/99" unmask name="cnae" value={comp && comp.cnae} disabled />
                                 </div>
                             </div>
                         </div>
@@ -175,13 +171,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Natureza Juridica</label>
-                                    <InputText name="naturezaJuridica" value={linkedCompany && linkedCompany.naturezaJuridica} disabled />
+                                    <InputText name="naturezaJuridica" value={comp && comp.naturezaJuridica} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Data de Abertura</label>
-                                    <InputMask mask="99/99/9999" name="dataAbertura" value={linkedCompany && linkedCompany.dataAbertura} disabled />
+                                    <InputMask mask="99/99/9999" name="dataAbertura" value={comp && comp.dataAbertura} disabled />
                                 </div>
                             </div>
                         </div>
@@ -190,13 +186,13 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Telefone</label>
-                                    <InputMask mask="(99)99999-9999" unmask name="telefone" value={linkedCompany && linkedCompany.telefone} disabled />
+                                    <InputMask mask="(99)99999-9999" unmask name="telefone" value={comp && comp.telefone} disabled />
                                 </div>
                             </div>
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Capital</label>
-                                    <InputNumber name="capital" value={linkedCompany && linkedCompany.capital} mode="currency" currency="BRL" locale="pt-BR" disabled />
+                                    <InputNumber name="capital" value={comp && comp.capital} mode="currency" currency="BRL" locale="pt-BR" disabled />
                                 </div>
                             </div>
                         </div>
@@ -206,30 +202,30 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                             <div className="card flex flex-column md:flex-row gap-3">
                                 <div className=" field">
                                     <label htmlFor="name" className="font-bold">cep</label>
-                                    <InputMask mask="99.999-999" name="endereco.cep" value={linkedCompany?.endereco && linkedCompany?.endereco.cep} disabled />
+                                    <InputMask mask="99.999-999" name="endereco.cep" value={comp?.endereco && comp?.endereco.cep} disabled />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Estado</label>
-                                    <InputText name="endereco.estado" value={linkedCompany?.endereco && linkedCompany?.endereco.estado} disabled />
+                                    <InputText name="endereco.estado" value={comp?.endereco && comp?.endereco.estado} disabled />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Cidade</label>
-                                    <InputText name="endereco.cidade" value={linkedCompany?.endereco && linkedCompany?.endereco.cidade} disabled />
+                                    <InputText name="endereco.cidade" value={comp?.endereco && comp?.endereco.cidade} disabled />
                                 </div>
                             </div>
 
                             <div className="card flex flex-column md:flex-row gap-3">
                                 <div className=" field">
                                     <label htmlFor="name" className="font-bold">Rua</label>
-                                    <InputText name="endereco.rua" value={linkedCompany?.endereco && linkedCompany?.endereco.rua} disabled />
+                                    <InputText name="endereco.rua" value={comp?.endereco && comp?.endereco.rua} disabled />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Bairro</label>
-                                    <InputText name="endereco.bairro" value={linkedCompany?.endereco && linkedCompany?.endereco.bairro} disabled />
+                                    <InputText name="endereco.bairro" value={comp?.endereco && comp?.endereco.bairro} disabled />
                                 </div>
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Numero</label>
-                                    <InputText name="endereco.numero" value={linkedCompany?.endereco && linkedCompany?.endereco.numero} disabled />
+                                    <InputText name="endereco.numero" value={comp?.endereco && comp?.endereco.numero} disabled />
                                 </div>
                             </div>
                         </div>
@@ -276,7 +272,7 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                         {selectPerson && (
                             <span>
                                 Você tem certeza que deseja desvincular<br></br>
-                                <b>{selectPerson.nome}</b> à <b>{linkedCompany?.nomeFantasia}</b>?
+                                <b>{selectPerson.nome}</b> à <b>{comp?.nomeFantasia}</b>?
                             </span>
                         )}
                     </div>

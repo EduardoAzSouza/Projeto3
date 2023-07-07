@@ -22,7 +22,7 @@ export const useAxios = () => {
     }
 
     const GetCompany = async (id) => {
-        await axios.get("https://localhost:7149/Pessoas/BuscarPorId/" + id)
+        await axios.get("https://localhost:7149/Empresa/BuscarPorId/" + id)
         .then(response => {
             setComp(response.data);
         });
@@ -87,6 +87,7 @@ export const useAxios = () => {
         StatusUpdateC,
         StatusUpdateP,
         AllCompanyPeople,
+        GetCompany,
         LinkCompany
     };
 };

@@ -215,7 +215,7 @@ export default function Table() {
                     <Column field="id" header="ID" sortable style={{ minWidth: '4rem' }}></Column>
                     <Column field="nomeFantasia" sortable header="Nome Fantasia"></Column>
                     <Column field="cnpj" header="CNPJ" sortable body={cnpjformat} style={{ minWidth: '10rem' }}></Column>
-                    <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ minWidth: '8rem' }}></Column>
+                    <Column field="status" header="Status" body={statusBodyTemplate} style={{ minWidth: '8rem' }}></Column>
                     <Column field="dataAbertura" sortable header="Data de Inicio"></Column>
                     <Column field="capital" sortable body={capitalformat} header="Capital"></Column>
                     <Column body={actionBodyTemplate} exportable={false} style={{ maxWidth: '11rem' }}></Column>

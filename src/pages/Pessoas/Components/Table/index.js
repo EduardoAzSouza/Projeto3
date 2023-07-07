@@ -167,8 +167,8 @@ export default function Table() {
                     <Column field="documento" sortable body={cpfFormat} header="CPF"></Column>
                     <Column field="telefone" sortable body={telFormat} header="Telefone"></Column>
                     <Column field="usuario" sortable header="Usuario"></Column>
-                    <Column field="status" header="Status" body={statusBodyTemplate} sortable style={{ textAlign: 'center' }}></Column>
-                    <Column field="empresaId" sortable body={companyId} header="Empresa" style={{ textAlign: 'center' }} ></Column>
+                    <Column field="status" header="Status" body={statusBodyTemplate} style={{ textAlign: 'center' }}></Column>
+                    <Column field="empresaId" sortable body={companyId} header="Empresa" ></Column>
                     <Column body={actionBodyTemplate} exportable={false} style={{ maxWidth: '12rem' }}></Column>
                 </DataTable>
 

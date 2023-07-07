@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 
-import { Title, Text, Main, Buttons, SubTitle } from "../../components/styled";
+import { Title, Main, Buttons } from "../../components/styled";
 
 const NotFound = () => {
     const navigate = useNavigate();

@@ -10,6 +10,8 @@ import { InputNumber } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputMask } from 'primereact/inputmask';
 
+import { Data, View, } from '../../../../components/styled';
+
 const UpdateDialog = ({ companyValue, personValue }) => {
     const { data, comp, GetAllCompanies, LinkCompany, GetCompany } = useAxios();
     const {
@@ -30,7 +32,7 @@ const UpdateDialog = ({ companyValue, personValue }) => {
     useEffect(() => {
         if (updatecompanies) {
             GetAllCompanies();
-            if (selectPerson.empresaId !== null){
+            if (selectPerson.empresaId !== null) {
                 GetCompany(selectPerson.empresaId)
             }
             setupdatecompanies(false);
@@ -70,7 +72,6 @@ const UpdateDialog = ({ companyValue, personValue }) => {
 
     const hideLinkDialog = () => {
         setLinkDialog(false);
-        setSelectPerson();
     };
 
     const hideConfirmLinkDialog = () => {
@@ -84,6 +85,31 @@ const UpdateDialog = ({ companyValue, personValue }) => {
     const cnpjformat = (rowData) => {
         return rowData.cnpj?.replace(/\D/g, '')
             .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5");
+    };
+
+    const cnpjformatD = (rowData) => {
+        if(rowData){
+            return rowData.toString().replace(/\D/g, '')
+            .replace(/^(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, "$1.$2.$3/$4-$5");
+        }
+    };
+
+    const capitalformat = (rowData) => {
+        if(rowData){
+            return rowData.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        } 
+    };
+
+    const cnaeformat = (rowData) => {
+        if(rowData){
+            return rowData.toString().replace(/\D/g, '').replace(/(\d{4})(\d{1})(\d{2})/, "$1-$2/$3");
+        }
+    };
+
+    const telformat = (rowData) => {
+        if(rowData){
+            return rowData.toString().replace(/\D/g, '').replace(/(\d{2})(\d{5})(\d{4})/, "($1)$2-$3");
+        }
     };
 
     const confirmLink = (selectCompany) => {
@@ -128,16 +154,60 @@ const UpdateDialog = ({ companyValue, personValue }) => {
             <React.Fragment>
                 <Toast ref={toast} />
                 {selectPerson?.empresaId != null ? (
-                    <Dialog modal className="p-fluid"
+                    <Dialog modal
                         header="empresa vinculada"
                         style={{ width: '50rem' }}
-                        breakpoints={{ '960px': '75vw', '641px': '90vw' }}
                         visible={linkDialog}
                         onHide={hideLinkDialog}>
-                        <div className="field">
-                            <Button label="desvincular empresa" icon="pi pi-check" severity="danger" onClick={() => confirmUnlink()} />
+                        <div className="flex flex-wrap justify-content-end">
+                            <Button label="desvincular empresa" icon="pi pi-times" 
+                            severity="danger" onClick={() => confirmUnlink()} />
                         </div>
-                        <div className="card flex flex-column md:flex-row gap-3">
+                        <Data>
+                            <View>
+                                <div >
+                                    <label className="font-bold">Nome Fantasia</label>
+                                    <span>{comp.nomeFantasia}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Nome Empresarial</label>
+                                    <span>{comp.nomeEmpresarial}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">CNPJ</label>
+                                    <span>{cnpjformatD(comp.cnpj)}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">CNAE</label>
+                                    <span>{cnaeformat(comp.cnae)}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Natureza Juridica</label>
+                                    <span>{comp.naturezaJuridica}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Telefone</label>
+                                    <span>{telformat(comp.telefone)}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Data de Abertura</label>
+                                    <span>{comp.dataAbertura}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Capital</label>
+                                    <span>{capitalformat(comp.capital)}</span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Endereço</label>
+                                    <span>{comp?.endereco?.rua} {comp?.endereco?.numero}, {comp?.endereco?.bairro} </span>
+                                </div>
+                                <div >
+                                    <label className="font-bold">Cidade</label>
+                                    <span>{comp?.endereco?.cidade}-{comp?.endereco?.estado}{comp?.endereco?.cep} </span>
+                                </div>
+                            </View>
+                        </Data>
+                        {/* <div className="card flex flex-column md:flex-row gap-3">
                             <div className="p-fluid flex-1">
                                 <div className="field">
                                     <label htmlFor="name" className="font-bold">Nome Fantasia</label>
@@ -228,9 +298,8 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                                     <InputText name="endereco.numero" value={comp?.endereco && comp?.endereco.numero} disabled />
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </Dialog>
-
                 ) : (
                     <Dialog visible={linkDialog} style={{ width: '50rem' }}
                         breakpoints={{ '960px': '75vw', '641px': '90vw' }}

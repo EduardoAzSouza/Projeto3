@@ -35,7 +35,6 @@ export const List = styled("ul", {
     justifyContent: "space-between"
 });
 
-
 export const Main = styled("div", {
     display: "flex",
     flexDirection: "column",
@@ -59,6 +58,15 @@ export const Horizon = styled("div", {
     
 })
 
+export const Datatext = styled("div", {
+    display: "flex",
+    flexDirection: "column",
+    margin: "0.2rem ",
+    "& i": {
+      marginRight: ".2rem",
+    },
+  });
+
 export const Text = styled("p", {
     maxWidth: "800px",
     textAlign: "justify",
@@ -80,3 +88,20 @@ export const Buttons = styled("div", {
     padding: "2rem",
     color: "#333"
 });
+
+export const Data = styled("div", {
+    display: "flex",
+    flexDirection: "column",
+    padding: "1rem",
+    marginTop: "1rem"
+  });
+
+  export const View = styled("div", {
+    display: "grid",
+    gap:"1rem",
+    gridTemplateColumns: "auto auto auto auto",
+    "& h3": {
+      fontSize: "1.2rem",
+      textAlign: "center",
+    }
+  });

@@ -45,8 +45,8 @@ const UpdateDialog = (props) => {
         try {
             if (selectCompany.cnpj?.length === 14
                 && selectCompany.cnae?.length === 7
-                && selectCompany.nomeEmpresarial?.length >= 8
-                && selectCompany.nomeFantasia?.length >= 8
+                && selectCompany.nomeEmpresarial?.length >= 5
+                && selectCompany.nomeFantasia?.length >= 5
                 && selectCompany.endereco?.numero !== undefined
                 && selectCompany.endereco?.cep !== undefined) {
                 UpdateCompany(selectCompany)
@@ -259,7 +259,8 @@ const UpdateDialog = (props) => {
                     <div className="p-fluid flex-1">
                         <div className="field">
                             <label htmlFor="name" className="font-bold">Data de Abertura</label>
-                            <InputMask mask="99/99/9999" name="dataAbertura" value={selectCompany && selectCompany.dataAbertura} />
+                            <InputMask mask="99/99/9999" name="dataAbertura" value={selectCompany && selectCompany.dataAbertura}
+                            disabled />
                         </div>
                     </div>
                 </div>

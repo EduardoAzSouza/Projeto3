@@ -17,14 +17,22 @@ const StatusDialog = () => {
 
     const updateStatus = async () => {
         try {
-            StatusUpdateC(selectCompany.id)
-            setStatusDialog(false);
-            setSelectCompany();
-            toast.current.show({
-                severity: 'success', summary: 'Ataulizado',
-                detail: 'status Atualizado', life: 3000
-            });
-            setUpdateData(true);
+            if (selectCompany.status !== "Pendente") {
+                StatusUpdateC(selectCompany.id)
+                setStatusDialog(false);
+                setSelectCompany();
+                toast.current.show({
+                    severity: 'success', summary: 'Ataulizado',
+                    detail: 'status Atualizado', life: 3000
+                });
+                setUpdateData(true);
+            } else {
+                setStatusDialog(false);
+                toast.current.show({
+                    severity: 'error', summary: 'Error',
+                    detail: 'não é possivel alterar o status', life: 3000
+                });
+            }
         } catch (error) {
             console.log('Erro ao alterar status', error);
         }

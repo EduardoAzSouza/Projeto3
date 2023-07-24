@@ -56,8 +56,9 @@ const CreateDialog = (props) => {
             const CNPJVerify = await fetch(`https://localhost:7149/Empresa/BuscarPorCnpj/${selectCompany.cnpj}`)
             if (selectCompany.cnpj?.length === 14
                 && selectCompany.cnae?.length === 7
-                && selectCompany.nomeEmpresarial?.length >= 8
-                && selectCompany.nomeFantasia?.length >= 8
+                && selectCompany.dataAbertura?.length === 8
+                && selectCompany.nomeEmpresarial?.length >= 5
+                && selectCompany.nomeFantasia?.length >= 5
                 && selectCompany.endereco?.numero !== undefined
                 && selectCompany.endereco?.cep !== undefined
                 && CNPJVerify.status === 404) {
@@ -286,7 +287,21 @@ const CreateDialog = (props) => {
                     <div className="p-fluid flex-1">
                         <div className="field">
                             <label htmlFor="dataAbertura" className="font-bold">Data de Abertura</label>
-                            <InputMask mask="99/99/9999" name="dataAbertura" autoClear={false} onChange={handleChange} />
+                            <InputMask mask="99/99/9999" name="dataAbertura" autoClear={false} onChange={handleChange} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectCompany.dataAbertura)
+                            })} />
+                            {submitted && !selectCompany.dataAbertura && (
+                                <Message
+                                    style={{
+                                        background: "none",
+                                        justifyContent: "start",
+                                        padding: "5px",
+                                    }}
+                                    severity="error"
+                                    text="data é obrigatorio"
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

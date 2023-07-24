@@ -203,7 +203,7 @@ const UpdateDialog = ({ companyValue, personValue }) => {
                                 </div>
                                 <div >
                                     <label className="font-bold">Cidade</label>
-                                    <span>{comp?.endereco?.cidade}-{comp?.endereco?.estado}{comp?.endereco?.cep} </span>
+                                    <span>{comp?.endereco?.cidade} - {comp?.endereco?.estado} {comp?.endereco?.cep} </span>
                                 </div>
                             </View>
                         </Data>

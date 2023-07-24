@@ -35,7 +35,8 @@ const CreateDialog = (props) => {
             console.log(selectPerson);
             if (selectPerson.documento?.length === 11
                 && selectPerson.nome?.length >= 5
-                && selectPerson.usuario?.length >= 3) {
+                && selectPerson.usuario?.length >= 3
+                && selectPerson.telefone?.length === 11) {
                 CreatePerson(selectPerson)
                 setCreateDialog(false);
                 setSubmitted(false);
@@ -124,37 +125,63 @@ const CreateDialog = (props) => {
                         </span>
                     </div>
                     {submitted && !selectPerson.documento && (
-                                <Message
-                                    style={{
-                                        background: "none",
-                                        justifyContent: "start",
-                                        padding: "5px",
-                                    }}
-                                    severity="error"
-                                    text="CPF é obrigatorio"
-                                />
-                            )}
-                            {submitted && selectPerson.documento?.length < 11 && (
-                                <Message
-                                    style={{
-                                        background: "none",
-                                        justifyContent: "start",
-                                        padding: "5px",
-                                    }}
-                                    severity="error"
-                                    text="CPF precisa de 11 numeros."
-                                />
-                            )}
+                        <Message
+                            style={{
+                                background: "none",
+                                justifyContent: "start",
+                                padding: "5px",
+                            }}
+                            severity="error"
+                            text="CPF é obrigatorio"
+                        />
+                    )}
+                    {submitted && selectPerson.documento?.length < 11 && (
+                        <Message
+                            style={{
+                                background: "none",
+                                justifyContent: "start",
+                                padding: "5px",
+                            }}
+                            severity="error"
+                            text="CPF precisa de 11 numeros."
+                        />
+                    )}
                 </div>
                 <div className="field">
                     <label htmlFor="name" className="font-bold">Telefone</label>
                     <div className="p-inputgroup">
                         <InputMask mask="(99)99999-9999" unmask placeholder="(99)99999-9999"
-                            autoClear={false} name="telefone" onChange={handleChange} />
+                            autoClear={false} name="telefone" onChange={handleChange} className={classNames({
+                                "p-invalid":
+                                    (submitted && !selectPerson.telefone) ||
+                                    (submitted && selectPerson.telefone?.length < 11)
+                            })} />
                         <span className="p-inputgroup-addon">
                             <i className="pi pi-phone"></i>
                         </span>
                     </div>
+                    {submitted && !selectPerson.telefone && (
+                        <Message
+                            style={{
+                                background: "none",
+                                justifyContent: "start",
+                                padding: "5px",
+                            }}
+                            severity="error"
+                            text="Telefone é obrigatorio"
+                        />
+                    )}
+                    {submitted && selectPerson.telefone?.length < 11 && (
+                        <Message
+                            style={{
+                                background: "none",
+                                justifyContent: "start",
+                                padding: "5px",
+                            }}
+                            severity="error"
+                            text="Telefone precisa de 11 numeros."
+                        />
+                    )}
                 </div>
                 <div className="field">
                     <label htmlFor="name" className="font-bold">Usuario</label>
